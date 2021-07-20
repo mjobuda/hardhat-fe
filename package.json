@@ -1,8 +1,8 @@
 {
   "name": "@berlinvege/hardhat-fe",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Hardhat plugin to develop smart contracts in Fe",
-  "repository": "",
+  "repository": "https://github.com/mjobuda/hardhat-fe",
   "homepage": "",
   "author": "Marek Owsikowski",
   "license": "MIT",
