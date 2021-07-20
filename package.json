@@ -1,6 +1,6 @@
 {
   "name": "@berlinvege/hardhat-fe",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Hardhat plugin to develop smart contracts in Fe",
   "repository": "",
   "homepage": "",
