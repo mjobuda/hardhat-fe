@@ -3,7 +3,7 @@ import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 import { Artifact, Artifacts, ProjectPathsConfig } from "hardhat/types";
 import { localPathToSourceName } from "hardhat/utils/source-names";
 import path from "path";
-const fejs = require('@berlinvege/fejs');
+var fejs = require("@berlinvege/fejs");
 import * as fs from 'fs';
 import { FeConfig } from "./types";
 
@@ -17,18 +17,24 @@ export async function compile(
   const feVersion = feConfig.version;
 
   const files = await getFeSources(paths);
+    //console.log(paths);
+    //console.log(files);
 
   let someContractFailed = false;
 
   for (const file of files) {
     const pathFromCWD = path.relative(process.cwd(), file);
     const pathFromSources = path.relative(paths.sources, file);
-    console.log("Compiling with Fe...");
+    //console.log("Compiling with Fe...");
+    //console.log("Fe moduler object... "+fejs.compile_to_ast);
 
     const sourceName = await localPathToSourceName(paths.root, file);
-    const compilerResult = fejs.compile(fs.readFileSync(sourceName, "utf8"))
-  for (const [key, value] of Object.entries(compilerResult.Contracts)) {
-    const artifact = getArtifactFromFeOutput(sourceName+'.'+key, value);
+    const feSourceCode = fs.readFileSync(file, "utf8");
+    //console.log(feSourceCode);
+    const compilerResult = fejs.compile(feSourceCode);
+    //console.log("Fe compilerResult object... "+compilerResult.contracts['Foo'].bytecode);
+  for (const key of Object.keys(compilerResult.contracts)) {
+    const artifact = getArtifactFromFeOutput(sourceName, key, compilerResult.contracts[key]);
     await artifacts.saveArtifactAndDebugFile(artifact);
   }
 
@@ -56,8 +62,8 @@ function pathToContractName(file: string) {
   return sourceName.substring(0, sourceName.indexOf("."));
 }
 
-function getArtifactFromFeOutput(sourceName: string, output: any): Artifact {
-  const contractName = pathToContractName(sourceName);
+function getArtifactFromFeOutput(sourceName: string, contractName: string, output: any): Artifact {
+  //const contractName = pathToContractName(sourceName);
 
   return {
     _format: ARTIFACT_FORMAT_VERSION,
@@ -65,7 +71,7 @@ function getArtifactFromFeOutput(sourceName: string, output: any): Artifact {
     sourceName,
     abi: output.abi,
     bytecode: add0xPrefixIfNecessary(output.bytecode),
-    deployedBytecode: add0xPrefixIfNecessary(output.bytecode_runtime),
+    deployedBytecode: "", //add0xPrefixIfNecessary(output.bytecode_runtime),
     linkReferences: {},
     deployedLinkReferences: {},
   };
